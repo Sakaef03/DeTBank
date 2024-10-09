@@ -1,41 +1,42 @@
 public class LoginFactory
 {
     private EncryptionAES cryptographer;
+
     public LoginFactory() throws Exception
     {
-        cryptographer = new EncryptionAES("loginkeys.txt");
+        cryptographer = new EncryptionAES("encryptionkey.txt");
     }
 
-    // public void registerUser() throws Exception
-    // {
-    //     String newUser = jTextFieldLogin.getText();
-    //     String newPassword = new String(jPasswordField.getPassword());
-    //     String info = newUser + "::" + newPassword;
-    //     String encrypted = this.cryptographer.encrypt(info, this.cryptographer.getKey());
-    //     boolean dupeLogin;
-    //     dupeLogin = this.cryptographer.lineFound(encrypted, "login.txt");
-    //     if(dupeLogin == false)
-    //     {
-    //         this.cryptographer.writeFile("login.txt", this.cryptographer.encrypt(info, this.cryptographer.getKey()));
-    //         String message = "";
-    //         switch(jComboBox1.getSelectedItem().toString())
-    //             {
-    //                 case "Português":
-    //                     message = "Usuário cadastrado";
-    //                     break;
-    //                 case "English":
-    //                     message = "Username registered";
-    //                     break;
-    //                 case "Русский":
-    //                     message = "Идентификация зарегистрирована";
-    //                     break;
-    //             }
-    //         jTextFieldResult.setText(message);
-    //     }
+    public void registerUser(String username, String password) throws Exception
+    {
+        // TODO: adicionar verificação para ver se o username (id) já tem no SQL (perguntar pro lucas como faz)
+        String info = username + "::" + password;
+        String encryptedInfo = this.cryptographer.encrypt(info, this.cryptographer.getKey());
+        this.cryptographer.writeFile("loginkeys.txt", encryptedInfo);
+    }
 
-    //     else
-    //     {
-    //         displayTakenUsernameMessage();
-    //     }
-    // }
+    // TODO: atualizar método para realizar lógica de login (ie: abrir nova tela)
+    public void login(String info) throws Exception
+    {
+        boolean loginSuccessful = false;
+        String search = this.cryptographer.encrypt(info, this.cryptographer.getKey());
+        loginSuccessful = this.cryptographer.lineFound(search, "loginkeys.txt");
+        if(loginSuccessful)
+        {
+            System.out.println("DEBUG: login successful");
+            // inserir lógica de login aqui
+        }
+        else
+        {
+            System.out.println("DEBUG: login invalid");
+            // inserir lógica para mostrar mensagem de erro na tela de login
+        }
+    }
+
+    // método para testar
+    public void decryptTest(String info) throws Exception
+    {
+        String result = this.cryptographer.decrypt(info, this.cryptographer.getKey());
+        System.out.println(result);
+    }
 }
