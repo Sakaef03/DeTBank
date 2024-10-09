@@ -2,15 +2,24 @@ public class User {
     private int agency;
     private String name;
     private double balance;
+    private String password;
 
     public User(){
         
     }
     
-    public User(int agency, String name, double balance) {
+    public User(int agency, String name, double balance, String password) {
+        this.agency = agency;
+        this.name = name;
+        this.balance = balance;
+        this.password = password;
+    }
+
+    public User(int agency, String name, String password) {
         this.agency = agency;
         this.name = name;
         this.balance = 1000.0;
+        this.password = password;
     }
 
     public int getAgency() {
@@ -35,6 +44,16 @@ public class User {
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public String getPassword()
+    {
+        return this.password;
+    }
+
+    public void setPassword(String password)
+    {
+        this.password = password;
     }
 
    
