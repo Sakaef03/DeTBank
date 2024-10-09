@@ -1,11 +1,25 @@
 package detbank;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 public class UserScreen extends JFrame {
     private JLabel welcomeLabel;
@@ -78,7 +92,6 @@ public class UserScreen extends JFrame {
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         buttonPanel.setBackground(Color.WHITE);
 
-        // Use as variáveis de instância para os botões
         withdrawButton = new JButton();
         withdrawButton.setFocusPainted(false);
         withdrawButton.setBackground(new Color(34, 139, 34));
