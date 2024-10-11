@@ -1,5 +1,3 @@
-package detbank;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -169,11 +167,11 @@ public class SignUpScreen extends JFrame {
         backButton.setText(bundle.getString("back"));
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            LoginScreen loginScreen = new LoginScreen();
-            SignUpScreen signUpScreen = new SignUpScreen(loginScreen);
-            signUpScreen.setVisible(true);
-        });
-    }
+    // public static void main(String[] args) {
+    //     SwingUtilities.invokeLater(() -> {
+    //         LoginScreen loginScreen = new LoginScreen();
+    //         SignUpScreen signUpScreen = new SignUpScreen(loginScreen);
+    //         signUpScreen.setVisible(true);
+    //     });
+    // }
 }
