@@ -16,7 +16,7 @@ public class LoginFactory
     }
 
     // TODO: atualizar método para realizar lógica de login (ie: abrir nova tela)
-    public void login(String info) throws Exception
+    public boolean login(String info) throws Exception
     {
         boolean loginSuccessful = false;
         String search = this.cryptographer.encrypt(info, this.cryptographer.getKey());
@@ -24,12 +24,12 @@ public class LoginFactory
         if(loginSuccessful)
         {
             System.out.println("DEBUG: login successful");
-            // inserir lógica de login aqui
+            return true;
         }
         else
         {
             System.out.println("DEBUG: login invalid");
-            // inserir lógica para mostrar mensagem de erro na tela de login
+            return false;
         }
     }
 

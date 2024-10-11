@@ -1,5 +1,3 @@
-package detbank;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,8 +13,10 @@ public class LoginScreen extends JFrame {
     private JButton createAccountButton;
     private JComboBox<String> languageBox;
     private ResourceBundle bundle;
+    private LoginFactory loginFactory;
 
-    public LoginScreen() {
+    public LoginScreen(LoginFactory loginFactory) {
+        this.loginFactory = loginFactory;
         setTitle("LoginScreen");
         setSize(400, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -122,11 +122,52 @@ public class LoginScreen extends JFrame {
 
         loginButton.addActionListener(e -> {
             // Lógica de autenticação
+            String password = String.valueOf(passwordField.getPassword());
+            String agency = agencyField.getText();
+            String info = agency + "::" + password;
+            boolean loginSuccessful = false;
+            try {
+                loginSuccessful = this.loginFactory.login(info);
+                if(loginSuccessful)
+                {
+                    setVisible(false);
+                    UserScreen userScreen = new UserScreen("Cliente teste");
+                }
+
+                else
+                {
+                    agencyField.setText("");
+                    passwordField.setText("");
+                    String selectedLanguage = (String) languageBox.getSelectedItem();
+                    String errorMessage = "errorMessage";
+                    switch (selectedLanguage) {
+                        case "Português (pt)":
+                            errorMessage = "Login inválido";
+                            break;
+                        case "English (en)":
+                            errorMessage = "Invalid login";
+                            break;
+                        case "Español (es)":
+                            errorMessage = "Login inválido";
+                            break;
+                        case "Русский (ru)":
+                            errorMessage = "Недействительная информация";
+                            break;
+                        case "Italiano (it)":
+                            errorMessage = "Accesso non valido";
+                            break;
+                    }
+                    JOptionPane.showMessageDialog(null, errorMessage);
+                }
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
         });
 
         createAccountButton.addActionListener(e -> OpenSignUpScreen());
 
         updateTexts(new Locale("pt", "BR"));
+        setVisible(true);
     }
 
     private void updateTexts(Locale locale) {
@@ -143,10 +184,10 @@ public class LoginScreen extends JFrame {
         this.setVisible(false);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            LoginScreen loginScreen = new LoginScreen();
-            loginScreen.setVisible(true);
-        });
-    }
+    // public static void main(String[] args) {
+    //     SwingUtilities.invokeLater(() -> {
+    //         LoginScreen loginScreen = new LoginScreen();
+    //         loginScreen.setVisible(true);
+    //     });
+    // }
 }

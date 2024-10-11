@@ -1,5 +1,3 @@
-package detbank;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -142,6 +140,7 @@ public class UserScreen extends JFrame {
         });
 
         updateTexts(new Locale("pt", "BR"));
+        setVisible(true);
     }
 
     private void updateTexts(Locale locale) {
