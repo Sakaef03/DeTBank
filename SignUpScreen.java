@@ -1,19 +1,31 @@
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
+import java.util.Random;
 import java.util.ResourceBundle;
-import javax.swing.*;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class SignUpScreen extends JFrame {
     private ResourceBundle bundle;
     private JLabel nameLabel;
-    private JLabel agencyLabel;
     private JLabel passwordLabel;
     private JLabel confirmPasswordLabel;
     private JButton createAccountButton;
     private JButton backButton;
-
     private JComboBox<String> languageBox;
 
     public SignUpScreen(LoginScreen loginScreen) {
@@ -33,7 +45,7 @@ public class SignUpScreen extends JFrame {
         JLabel titleLabel = new JLabel("<html><span style='color:green;'>De</span><span style='color:black;'>TB</span><span style='color:green;'>ank</span>");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 48));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -56,18 +68,9 @@ public class SignUpScreen extends JFrame {
         gbc.gridx = 1;
         mainPanel.add(nameField, gbc);
 
-        agencyLabel = new JLabel("Agência:");
-        JTextField agencyField = new JTextField(15);
-        gbc.gridy = 3;
-        gbc.gridx = 0;
-        mainPanel.add(agencyLabel, gbc);
-
-        gbc.gridx = 1;
-        mainPanel.add(agencyField, gbc);
-
         passwordLabel = new JLabel("Senha:");
         JPasswordField passwordField = new JPasswordField(15);
-        gbc.gridy = 4;
+        gbc.gridy = 3;
         gbc.gridx = 0;
         mainPanel.add(passwordLabel, gbc);
 
@@ -76,7 +79,7 @@ public class SignUpScreen extends JFrame {
 
         confirmPasswordLabel = new JLabel("Confirmar Senha:");
         JPasswordField confirmPasswordField = new JPasswordField(15);
-        gbc.gridy = 5;
+        gbc.gridy = 4;
         gbc.gridx = 0;
         mainPanel.add(confirmPasswordLabel, gbc);
 
@@ -87,7 +90,7 @@ public class SignUpScreen extends JFrame {
         createAccountButton.setFocusPainted(false);
         createAccountButton.setBackground(new Color(34, 139, 34));
         createAccountButton.setForeground(Color.WHITE);
-        gbc.gridy = 6;
+        gbc.gridy = 5;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
@@ -97,7 +100,7 @@ public class SignUpScreen extends JFrame {
         backButton.setFocusPainted(false);
         backButton.setBackground(Color.GRAY);
         backButton.setForeground(Color.WHITE);
-        gbc.gridy = 7;
+        gbc.gridy = 6;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
         mainPanel.add(backButton, gbc);
@@ -132,16 +135,16 @@ public class SignUpScreen extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String name = nameField.getText();
-                String agency = agencyField.getText();
                 String password = new String(passwordField.getPassword());
                 String confirmPassword = new String(confirmPasswordField.getPassword());
 
-                if (name.isEmpty() || agency.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                    JOptionPane.showMessageDialog(SignUpScreen.this, "Todos os campos são obrigatórios.", "Erro", JOptionPane.ERROR_MESSAGE);
+                if (name.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                    JOptionPane.showMessageDialog(SignUpScreen.this, bundle.getString("error_message"), bundle.getString("error_title"), JOptionPane.ERROR_MESSAGE);
                 } else if (!password.equals(confirmPassword)) {
-                    JOptionPane.showMessageDialog(SignUpScreen.this, "As senhas não coincidem.", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(SignUpScreen.this, bundle.getString("password_mismatch"), bundle.getString("error_title"), JOptionPane.ERROR_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(SignUpScreen.this, "Conta criada com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    String agency = generateAgencyNumber(); 
+                    JOptionPane.showMessageDialog(SignUpScreen.this, bundle.getString("success_message") + "\n" + bundle.getString("user") + ": " + name + "\n" + bundle.getString("agency") + ": " + agency, bundle.getString("success_title"), JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
@@ -157,21 +160,19 @@ public class SignUpScreen extends JFrame {
         updateTexts(new Locale("pt", "BR"));
     }
 
+    // Função para gerar um número de agência aleatório de 6 dígitos.
+    private String generateAgencyNumber() {
+        Random random = new Random();
+        int agencyNumber = 100000 + random.nextInt(900000);  // Gera um número entre 100000 e 999999
+        return String.valueOf(agencyNumber);
+    }
+
     private void updateTexts(Locale locale) {
         bundle = ResourceBundle.getBundle("messages", locale);
         nameLabel.setText(bundle.getString("name"));
-        agencyLabel.setText(bundle.getString("agency"));
         passwordLabel.setText(bundle.getString("password"));
         confirmPasswordLabel.setText(bundle.getString("confirm_password"));
         createAccountButton.setText(bundle.getString("create_account"));
         backButton.setText(bundle.getString("back"));
     }
-
-    // public static void main(String[] args) {
-    //     SwingUtilities.invokeLater(() -> {
-    //         LoginScreen loginScreen = new LoginScreen();
-    //         SignUpScreen signUpScreen = new SignUpScreen(loginScreen);
-    //         signUpScreen.setVisible(true);
-    //     });
-    // }
 }
