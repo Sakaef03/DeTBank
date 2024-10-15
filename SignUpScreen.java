@@ -27,13 +27,18 @@ public class SignUpScreen extends JFrame {
     private JButton createAccountButton;
     private JButton backButton;
     private JComboBox<String> languageBox;
+    private LoginFactory loginFactory;
+    private JTextField nameField;
+    private JPasswordField passwordField;
+    private JPasswordField confirmPasswordField;
 
-    public SignUpScreen(LoginScreen loginScreen) {
+    public SignUpScreen(LoginScreen loginScreen) throws Exception {
         setTitle("Criar Conta - DeTBank");
         setSize(400, 450);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
+        this.loginFactory = new LoginFactory();
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
@@ -59,7 +64,7 @@ public class SignUpScreen extends JFrame {
         mainPanel.add(languageBox, gbc);
 
         nameLabel = new JLabel("Nome:");
-        JTextField nameField = new JTextField(15);
+        this.nameField = new JTextField(15);
         gbc.gridy = 2;
         gbc.gridwidth = 1;
         gbc.gridx = 0;
@@ -69,7 +74,7 @@ public class SignUpScreen extends JFrame {
         mainPanel.add(nameField, gbc);
 
         passwordLabel = new JLabel("Senha:");
-        JPasswordField passwordField = new JPasswordField(15);
+        this.passwordField = new JPasswordField(15);
         gbc.gridy = 3;
         gbc.gridx = 0;
         mainPanel.add(passwordLabel, gbc);
@@ -78,7 +83,7 @@ public class SignUpScreen extends JFrame {
         mainPanel.add(passwordField, gbc);
 
         confirmPasswordLabel = new JLabel("Confirmar Senha:");
-        JPasswordField confirmPasswordField = new JPasswordField(15);
+        this.confirmPasswordField = new JPasswordField(15);
         gbc.gridy = 4;
         gbc.gridx = 0;
         mainPanel.add(confirmPasswordLabel, gbc);
@@ -134,17 +139,10 @@ public class SignUpScreen extends JFrame {
         createAccountButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String name = nameField.getText();
-                String password = new String(passwordField.getPassword());
-                String confirmPassword = new String(confirmPasswordField.getPassword());
-
-                if (name.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                    JOptionPane.showMessageDialog(SignUpScreen.this, bundle.getString("error_message"), bundle.getString("error_title"), JOptionPane.ERROR_MESSAGE);
-                } else if (!password.equals(confirmPassword)) {
-                    JOptionPane.showMessageDialog(SignUpScreen.this, bundle.getString("password_mismatch"), bundle.getString("error_title"), JOptionPane.ERROR_MESSAGE);
-                } else {
-                    String agency = generateAgencyNumber(); 
-                    JOptionPane.showMessageDialog(SignUpScreen.this, bundle.getString("success_message") + "\n" + bundle.getString("user") + ": " + name + "\n" + bundle.getString("agency") + ": " + agency, bundle.getString("success_title"), JOptionPane.INFORMATION_MESSAGE);
+                try {
+                    registerNewUser();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
                 }
             }
         });
@@ -160,10 +158,9 @@ public class SignUpScreen extends JFrame {
         updateTexts(new Locale("pt", "BR"));
     }
 
-    // Função para gerar um número de agência aleatório de 6 dígitos.
     private String generateAgencyNumber() {
         Random random = new Random();
-        int agencyNumber = 100000 + random.nextInt(900000);  // Gera um número entre 100000 e 999999
+        int agencyNumber = 100000 + random.nextInt(900000); 
         return String.valueOf(agencyNumber);
     }
 
@@ -174,5 +171,22 @@ public class SignUpScreen extends JFrame {
         confirmPasswordLabel.setText(bundle.getString("confirm_password"));
         createAccountButton.setText(bundle.getString("create_account"));
         backButton.setText(bundle.getString("back"));
+    }
+
+    public void registerNewUser() throws Exception
+    {
+        String name = nameField.getText();
+        String password = new String(passwordField.getPassword());
+        String confirmPassword = new String(confirmPasswordField.getPassword());
+
+        if (name.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(SignUpScreen.this, bundle.getString("error_message"), bundle.getString("error_title"), JOptionPane.ERROR_MESSAGE);
+            } else if (!password.equals(confirmPassword)) {
+                JOptionPane.showMessageDialog(SignUpScreen.this, bundle.getString("password_mismatch"), bundle.getString("error_title"), JOptionPane.ERROR_MESSAGE);
+            } else {
+                String agency = generateAgencyNumber(); 
+                JOptionPane.showMessageDialog(SignUpScreen.this, bundle.getString("success_message") + "\n" + bundle.getString("user") + ": " + name + "\n" + bundle.getString("agency") + ": " + agency, bundle.getString("success_title"), JOptionPane.INFORMATION_MESSAGE);
+                this.loginFactory.registerUser(agency,password);
+            }
     }
 }

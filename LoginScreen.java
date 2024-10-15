@@ -164,7 +164,13 @@ public class LoginScreen extends JFrame {
             }
         });
 
-        createAccountButton.addActionListener(e -> OpenSignUpScreen());
+        createAccountButton.addActionListener(e -> {
+            try {
+                OpenSignUpScreen();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        });
 
         updateTexts(new Locale("pt", "BR"));
         setVisible(true);
@@ -178,7 +184,7 @@ public class LoginScreen extends JFrame {
         createAccountButton.setText(bundle.getString("create_account"));
     }
 
-    private void OpenSignUpScreen() {
+    private void OpenSignUpScreen() throws Exception {
         SignUpScreen signUpScreen = new SignUpScreen(this);
         signUpScreen.setVisible(true); 
         this.setVisible(false);
