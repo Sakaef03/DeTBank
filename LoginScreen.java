@@ -120,8 +120,9 @@ public class LoginScreen extends JFrame {
             }
         });
 
+
+        //COLOCAR NO SERVIDOR
         loginButton.addActionListener(e -> {
-            // Lógica de autenticação
             String password = String.valueOf(passwordField.getPassword());
             String agency = agencyField.getText();
             String info = agency + "::" + password;
@@ -163,6 +164,8 @@ public class LoginScreen extends JFrame {
                 e1.printStackTrace();
             }
         });
+        //COLOCAR NO SERVIDOR
+
 
         createAccountButton.addActionListener(e -> {
             try {
@@ -189,11 +192,4 @@ public class LoginScreen extends JFrame {
         signUpScreen.setVisible(true); 
         this.setVisible(false);
     }
-
-    // public static void main(String[] args) {
-    //     SwingUtilities.invokeLater(() -> {
-    //         LoginScreen loginScreen = new LoginScreen();
-    //         loginScreen.setVisible(true);
-    //     });
-    // }
 }
