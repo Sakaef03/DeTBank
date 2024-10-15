@@ -1,23 +1,9 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 public class UserScreen extends JFrame {
     private JLabel welcomeLabel;
@@ -25,7 +11,7 @@ public class UserScreen extends JFrame {
     private JComboBox<String> languageBox;
     private ResourceBundle bundle;
     private String userName;
-    private double userBalance = 1000.00; // Exemplo de saldo inicial
+    private double userBalance = 1000.00; 
     private JButton withdrawButton;
     private JButton depositButton;
     private JButton printButton;
@@ -152,10 +138,4 @@ public class UserScreen extends JFrame {
         printButton.setText(bundle.getString("print"));
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            UserScreen userScreen = new UserScreen("Fulano");
-            userScreen.setVisible(true);
-        });
-    }
 }

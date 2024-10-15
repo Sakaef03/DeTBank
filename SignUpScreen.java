@@ -31,6 +31,7 @@ public class SignUpScreen extends JFrame {
     private JTextField nameField;
     private JPasswordField passwordField;
     private JPasswordField confirmPasswordField;
+    private CrudBD crudBD;
 
     public SignUpScreen(LoginScreen loginScreen) throws Exception {
         setTitle("Criar Conta - DeTBank");
@@ -39,6 +40,7 @@ public class SignUpScreen extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         this.loginFactory = new LoginFactory();
+        this.crudBD = new CrudBD();
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new GridBagLayout());
@@ -190,6 +192,7 @@ public class SignUpScreen extends JFrame {
                 String agency = generateAgencyNumber(); 
                 JOptionPane.showMessageDialog(SignUpScreen.this, bundle.getString("success_message") + "\n" + bundle.getString("user") + ": " + name + "\n" + bundle.getString("agency") + ": " + agency, bundle.getString("success_title"), JOptionPane.INFORMATION_MESSAGE);
                 this.loginFactory.registerUser(agency,password);
+                this.crudBD.insertAccount(new User(Integer.parseInt(agency), name, password));
             }
     }
 }

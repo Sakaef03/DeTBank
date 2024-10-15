@@ -22,6 +22,13 @@ public class User {
         this.password = password;
     }
 
+    public User(int agency, String password) {
+        this.agency = agency;
+        this.name = null;
+        this.balance = 1000.0;
+        this.password = password;
+    }
+
     public int getAgency() {
         return agency;
     }

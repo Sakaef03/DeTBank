@@ -105,4 +105,29 @@ public class CrudBD {
         }   
     }
 
+    public String getUserName(User uD)
+    {
+        String   sqlSelect = "SELECT NAME FROM ACCOUNT WHERE AGENCY = ?";
+        Connection  conn = ConnFactory.getConn();
+        PreparedStatement stmt = null;
+        ResultSet rs;
+        try
+        {   stmt = conn.prepareStatement(sqlSelect);
+            stmt.setInt(1, uD.getAgency());
+            rs = stmt.executeQuery();
+            if(rs.next())
+            {   
+               uD.setName(rs.getString(1));
+            }
+            return uD.getName();
+        }
+        catch(SQLException ex)
+        {   JOptionPane.showMessageDialog(null,"Erro ao buscar o nome" + ex.toString());
+            return null;
+        }
+        finally
+        {   ConnFactory.closeConn(conn, stmt);
+        }   
+    }
+
 }

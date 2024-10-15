@@ -14,9 +14,12 @@ public class LoginScreen extends JFrame {
     private JComboBox<String> languageBox;
     private ResourceBundle bundle;
     private LoginFactory loginFactory;
+    private CrudBD crudBD;
+
 
     public LoginScreen(LoginFactory loginFactory) {
         this.loginFactory = loginFactory;
+        this.crudBD = new CrudBD();
         setTitle("LoginScreen");
         setSize(400, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -121,18 +124,20 @@ public class LoginScreen extends JFrame {
         });
 
 
-        //COLOCAR NO SERVIDOR
         loginButton.addActionListener(e -> {
             String password = String.valueOf(passwordField.getPassword());
             String agency = agencyField.getText();
             String info = agency + "::" + password;
             boolean loginSuccessful = false;
+            
             try {
                 loginSuccessful = this.loginFactory.login(info);
                 if(loginSuccessful)
                 {
+                    User user = new User(Integer.parseInt(agency), password);
                     setVisible(false);
-                    UserScreen userScreen = new UserScreen("Cliente teste");
+                    String name = this.crudBD.getUserName(user);
+                    UserScreen userScreen = new UserScreen(name);
                 }
 
                 else
@@ -164,7 +169,6 @@ public class LoginScreen extends JFrame {
                 e1.printStackTrace();
             }
         });
-        //COLOCAR NO SERVIDOR
 
 
         createAccountButton.addActionListener(e -> {
