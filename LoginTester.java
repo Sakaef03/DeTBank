@@ -3,5 +3,4 @@ public class LoginTester {
         LoginFactory factory = new LoginFactory();
         LoginScreen login = new LoginScreen(factory);
     }
-    //889541 - s - cogo
 }
