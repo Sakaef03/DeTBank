@@ -56,8 +56,10 @@ public class ServerConnection {
         return input.readUTF();
     }
 
-
-
+    public void sendLocale(String selectedLanguage) throws IOException {
+        output.writeUTF(selectedLanguage); 
+    }
+    
     public double getUpdatedBalance() {
         try {
             return input.readDouble();

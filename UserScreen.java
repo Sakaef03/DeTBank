@@ -217,7 +217,7 @@ public class UserScreen extends JFrame {
 
     private void updateBalance(double newBalance) {
         this.userBalance = newBalance;
-        //balanceLabel.setText(bundle.getString("current_balance") + ": $" + String.format("%.2f", userBalance));
+        balanceLabel.setText(bundle.getString("current_balance") + ": $" + String.format("%.2f", userBalance));
     }
 
     private void updateTexts(Locale locale) {
