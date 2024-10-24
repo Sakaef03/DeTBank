@@ -1,9 +1,25 @@
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class UserScreen extends JFrame {
     private JLabel welcomeLabel;
@@ -11,14 +27,24 @@ public class UserScreen extends JFrame {
     private JComboBox<String> languageBox;
     private ResourceBundle bundle;
     private String userName;
-    private double userBalance = 1000.00; 
+    private double userBalance;
+    private User user;
     private JButton withdrawButton;
     private JButton depositButton;
     private JButton printButton;
+    private Socket clientSocket;
+    private int agency;
+    private CrudBD DB;
 
-    public UserScreen(String userName) {
-        this.userName = userName;
-        
+    public UserScreen(int agency) {
+        this.agency=agency;
+        this.DB = new CrudBD();
+        this.user = new User(agency);
+        this.userName= DB.getUserName(user);
+        DB.showBalance(user);
+        this.userBalance = DB.getBalance(user);
+        this.user.setBalance(userBalance);
+
         setTitle("DETBANK");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -46,7 +72,7 @@ public class UserScreen extends JFrame {
         JLabel titleLabel = new JLabel("<html><span style='color:green;'>De</span><span style='color:black;'>TB</span><span style='color:green;'>ank</span></html>");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 32));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -63,7 +89,7 @@ public class UserScreen extends JFrame {
         balancePanel.setBackground(Color.LIGHT_GRAY);
         balancePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         balancePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        
+
         balanceLabel = new JLabel();
         balanceLabel.setFont(new Font("Arial", Font.BOLD, 26));
         balanceLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -80,12 +106,40 @@ public class UserScreen extends JFrame {
         withdrawButton.setFocusPainted(false);
         withdrawButton.setBackground(new Color(34, 139, 34));
         withdrawButton.setForeground(Color.WHITE);
+        withdrawButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String amountStr = JOptionPane.showInputDialog(bundle.getString("withdraw_prompt"));
+                if (amountStr != null) {
+                    try {
+                        double amount = Double.parseDouble(amountStr);
+                        new Thread(() -> handleWithdraw(amount)).start();
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(null, bundle.getString("error_message"));
+                    }
+                }
+            }
+        });
         buttonPanel.add(withdrawButton);
 
         depositButton = new JButton();
         depositButton.setFocusPainted(false);
         depositButton.setBackground(new Color(34, 139, 34));
         depositButton.setForeground(Color.WHITE);
+        depositButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String amountStr = JOptionPane.showInputDialog(bundle.getString("deposit_prompt"));
+                if (amountStr != null) {
+                    try {
+                        double amount = Double.parseDouble(amountStr);
+                        new Thread(() -> handleDeposit(amount)).start();
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(null, bundle.getString("error_message"));
+                    }
+                }
+            }
+        });
         buttonPanel.add(depositButton);
 
         printButton = new JButton();
@@ -126,16 +180,60 @@ public class UserScreen extends JFrame {
         });
 
         updateTexts(new Locale("pt", "BR"));
+        updateBalance(userBalance);
         setVisible(true);
+
+        try {
+            clientSocket = new Socket("localhost", 3333);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleWithdraw(double amount) {
+        try {
+            ServerConnection connection = new ServerConnection(clientSocket);
+            connection.sendRequest("withdraw", agency, userName, amount); 
+            String response = connection.getResponse();
+            JOptionPane.showMessageDialog(null, response);
+            updateBalance(connection.getUpdatedBalance());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    private void handleDeposit(double amount) {
+        try {
+            ServerConnection connection = new ServerConnection(clientSocket);
+            connection.sendRequest("deposit", agency, userName, amount);  
+            String response = connection.getResponse();
+            JOptionPane.showMessageDialog(null, response);
+            updateBalance(connection.getUpdatedBalance());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+
+    private void updateBalance(double newBalance) {
+        this.userBalance = newBalance;
+        //balanceLabel.setText(bundle.getString("current_balance") + ": $" + String.format("%.2f", userBalance));
     }
 
     private void updateTexts(Locale locale) {
         bundle = ResourceBundle.getBundle("messages", locale);
-        welcomeLabel.setText(bundle.getString("welcome_back") + " " + userName);
+        welcomeLabel.setText(bundle.getString("welcome_back") + ", " + userName);
         balanceLabel.setText(bundle.getString("current_balance") + ": $" + String.format("%.2f", userBalance));
         withdrawButton.setText(bundle.getString("withdraw"));
         depositButton.setText(bundle.getString("deposit"));
         printButton.setText(bundle.getString("print"));
     }
 
+    public int getAgency() {
+        return agency;
+    }
+
+    public void setAgency(int agency) {
+        this.agency = agency;
+    }
 }
