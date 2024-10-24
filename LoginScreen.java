@@ -1,10 +1,24 @@
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class LoginScreen extends JFrame {
     private JLabel agencyLabel;
@@ -136,8 +150,7 @@ public class LoginScreen extends JFrame {
                 {
                     User user = new User(Integer.parseInt(agency), password);
                     setVisible(false);
-                    String name = this.crudBD.getUserName(user);
-                    UserScreen userScreen = new UserScreen(name);
+                    UserScreen userScreen = new UserScreen(Integer.parseInt(agency));
                 }
 
                 else

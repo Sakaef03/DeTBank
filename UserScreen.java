@@ -1,11 +1,25 @@
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import javax.swing.*;
-import java.net.Socket;
-import java.io.IOException;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class UserScreen extends JFrame {
     private JLabel welcomeLabel;
@@ -14,14 +28,22 @@ public class UserScreen extends JFrame {
     private ResourceBundle bundle;
     private String userName;
     private double userBalance;
+    private User user;
     private JButton withdrawButton;
     private JButton depositButton;
     private JButton printButton;
     private Socket clientSocket;
+    private int agency;
+    private CrudBD DB;
 
-    public UserScreen(String userName) {
-        this.userName = userName;
-        userBalance = getUserBalanceFromDB(userName);
+    public UserScreen(int agency) {
+        this.agency=agency;
+        this.DB = new CrudBD();
+        this.user = new User(agency);
+        this.userName= DB.getUserName(user);
+        DB.showBalance(user);
+        this.userBalance = DB.getBalance(user);
+        this.user.setBalance(userBalance);
 
         setTitle("DETBANK");
         setSize(400, 300);
@@ -158,6 +180,7 @@ public class UserScreen extends JFrame {
         });
 
         updateTexts(new Locale("pt", "BR"));
+        updateBalance(userBalance);
         setVisible(true);
 
         try {
@@ -167,35 +190,34 @@ public class UserScreen extends JFrame {
         }
     }
 
-    private double getUserBalanceFromDB(String userName) {
-        return 1000.00;
-    }
-
     private void handleWithdraw(double amount) {
         try {
             ServerConnection connection = new ServerConnection(clientSocket);
-            String response = connection.sendWithdrawRequest(userName, amount);
+            connection.sendRequest("withdraw", agency, userName, amount); 
+            String response = connection.getResponse();
             JOptionPane.showMessageDialog(null, response);
             updateBalance(connection.getUpdatedBalance());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-
+    
     private void handleDeposit(double amount) {
         try {
             ServerConnection connection = new ServerConnection(clientSocket);
-            String response = connection.sendDepositRequest(userName, amount);
+            connection.sendRequest("deposit", agency, userName, amount);  
+            String response = connection.getResponse();
             JOptionPane.showMessageDialog(null, response);
             updateBalance(connection.getUpdatedBalance());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
+    
 
     private void updateBalance(double newBalance) {
-        userBalance = newBalance;
-        balanceLabel.setText(bundle.getString("current_balance") + ": $" + String.format("%.2f", userBalance));
+        this.userBalance = newBalance;
+        //balanceLabel.setText(bundle.getString("current_balance") + ": $" + String.format("%.2f", userBalance));
     }
 
     private void updateTexts(Locale locale) {
@@ -205,5 +227,13 @@ public class UserScreen extends JFrame {
         withdrawButton.setText(bundle.getString("withdraw"));
         depositButton.setText(bundle.getString("deposit"));
         printButton.setText(bundle.getString("print"));
+    }
+
+    public int getAgency() {
+        return agency;
+    }
+
+    public void setAgency(int agency) {
+        this.agency = agency;
     }
 }
