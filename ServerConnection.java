@@ -18,39 +18,44 @@ public class ServerConnection {
         }
     }
 
-    public void sendRequest(String requestType, int agency, String userName, double amount) throws IOException {
+    public void sendRequest(String requestType, int agency, String language, double amount) throws IOException {
         DataOutputStream output = new DataOutputStream(socket.getOutputStream());
         output.writeUTF(requestType);
         output.writeInt(agency);       
-        output.writeUTF(userName);     
+        output.writeUTF(language);     
         output.writeDouble(amount);    
         output.flush();
     }
     
 
-    public String sendWithdrawRequest(String userName, double amount) {
+    public String sendWithdrawRequest(String language, double amount) {
         try {
             output.writeUTF("withdraw");
-            output.writeUTF(userName);
+            output.writeUTF(language);
             output.writeDouble(amount);
-            return input.readUTF();
+            String response = input.readUTF();
+            double updatedBalance = input.readDouble();
+            return response + " | New Balance: $" + updatedBalance;
         } catch (IOException e) {
             e.printStackTrace();
             return "Error during withdrawal";
         }
     }
-
-    public String sendDepositRequest(String userName, double amount) {
+    
+    public String sendDepositRequest(String language, double amount) {
         try {
             output.writeUTF("deposit");
-            output.writeUTF(userName);
+            output.writeUTF(language);
             output.writeDouble(amount);
-            return input.readUTF();
+            String response = input.readUTF();
+            double updatedBalance = input.readDouble();
+            return response + " | New Balance: $" + updatedBalance;
         } catch (IOException e) {
             e.printStackTrace();
             return "Error during deposit";
         }
     }
+    
 
     public String getResponse() throws IOException {
         return input.readUTF();
@@ -68,4 +73,6 @@ public class ServerConnection {
             return 0.0;
         }
     }
+
+    
 }

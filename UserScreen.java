@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -35,6 +34,9 @@ public class UserScreen extends JFrame {
     private Socket clientSocket;
     private int agency;
     private CrudBD DB;
+    private WriteFile writer;
+    private String lang;
+    private boolean isAmerican;
 
     public UserScreen(int agency) {
         this.agency=agency;
@@ -44,6 +46,8 @@ public class UserScreen extends JFrame {
         DB.showBalance(user);
         this.userBalance = DB.getBalance(user);
         this.user.setBalance(userBalance);
+        this.writer = new WriteFile("notafiscal.txt");
+        this.lang = "pt";
 
         setTitle("DETBANK");
         setSize(400, 300);
@@ -147,6 +151,29 @@ public class UserScreen extends JFrame {
         printButton.setBackground(new Color(34, 139, 34));
         printButton.setForeground(Color.WHITE);
         buttonPanel.add(printButton);
+        printButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String language = getLang();
+                String name = getUserName();
+                String text = "";
+                updateBalance(getBalance());
+        
+                switch(language) {
+                    case "pt" -> text = String.format("Saldo atual: R$%.2f", getBalance());
+                    case "en" -> text = String.format("Current balance: %.2f BRL", getBalance());
+                    case "es" -> text = String.format("Saldo actual: %.2f BRL", getBalance());
+                    case "ru" -> text = String.format("Текущий баланс: %.2f БРЛ", getBalance());
+                    case "it" -> text = String.format("Saldo attuale: %.2f BRL", getBalance());
+                    default -> text = String.format("Saldo atual: R$%.2f", getBalance());
+                }
+        
+                DateHandler dateHandler = new DateHandler(isAmerican());
+                String date = dateHandler.getDate();
+                getWriter().write(name, text, date);
+            }
+        });
+        
 
         gbc.gridy = 3;
         contentPanel.add(buttonPanel, gbc);
@@ -160,25 +187,36 @@ public class UserScreen extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String selectedLanguage = (String) languageBox.getSelectedItem();
                 switch (selectedLanguage) {
-                    case "Português (pt)":
+                    case "Português (pt)" -> {
                         updateTexts(new Locale("pt", "BR"));
-                        break;
-                    case "English (en)":
+                        setLang("pt");
+                        setAmerican(false);
+                    }
+                    case "English (en)" -> {
                         updateTexts(new Locale("en", "US"));
-                        break;
-                    case "Español (es)":
+                        setLang("en");
+                        setAmerican(true);
+                    }
+                    case "Español (es)" -> {
                         updateTexts(new Locale("es", "ES"));
-                        break;
-                    case "Русский (ru)":
+                        setLang("es");
+                        setAmerican(false);
+                    }
+                    case "Русский (ru)" -> {
                         updateTexts(new Locale("ru", "RU"));
-                        break;
-                    case "Italiano (it)":
+                        setLang("ru");
+                        setAmerican(false);
+                    }
+                    case "Italiano (it)" -> {
                         updateTexts(new Locale("it", "IT"));
-                        break;
+                        setLang("it");
+                        setAmerican(false);
+                    }
                 }
             }
         });
 
+        setLang("pt");
         updateTexts(new Locale("pt", "BR"));
         updateBalance(userBalance);
         setVisible(true);
@@ -193,7 +231,7 @@ public class UserScreen extends JFrame {
     private void handleWithdraw(double amount) {
         try {
             ServerConnection connection = new ServerConnection(clientSocket);
-            connection.sendRequest("withdraw", agency, userName, amount); 
+            connection.sendRequest("withdraw", agency, (String) languageBox.getSelectedItem(), amount); 
             String response = connection.getResponse();
             JOptionPane.showMessageDialog(null, response);
             updateBalance(connection.getUpdatedBalance());
@@ -205,7 +243,7 @@ public class UserScreen extends JFrame {
     private void handleDeposit(double amount) {
         try {
             ServerConnection connection = new ServerConnection(clientSocket);
-            connection.sendRequest("deposit", agency, userName, amount);  
+            connection.sendRequest("deposit", agency, (String) languageBox.getSelectedItem(), amount);  
             String response = connection.getResponse();
             JOptionPane.showMessageDialog(null, response);
             updateBalance(connection.getUpdatedBalance());
@@ -235,5 +273,38 @@ public class UserScreen extends JFrame {
 
     public void setAgency(int agency) {
         this.agency = agency;
+    }
+
+    private void setLang(String lang)
+    {
+        this.lang = lang;
+    }
+
+    private String getLang()
+    {
+        return this.lang;
+    }
+
+    private double getBalance()
+    {
+        return this.userBalance;
+    }
+
+    private WriteFile getWriter()
+    {
+        return this.writer;
+    }
+
+    private boolean isAmerican() {
+        return this.isAmerican;
+    }
+
+    private void setAmerican(boolean isAmerican) {
+        this.isAmerican = isAmerican;
+    }
+
+    private String getUserName()
+    {
+        return this.userName;
     }
 }
