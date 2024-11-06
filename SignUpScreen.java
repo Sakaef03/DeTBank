@@ -160,8 +160,6 @@ public class SignUpScreen extends JFrame {
         updateTexts(new Locale("pt", "BR"));
     }
 
-
-    //COLOCAR NO SERVIDOR
     private String generateAgencyNumber() {
         Random random = new Random();
         int agencyNumber = 100000 + random.nextInt(900000); 
@@ -177,7 +175,6 @@ public class SignUpScreen extends JFrame {
         backButton.setText(bundle.getString("back"));
     }
 
-    //COLOCAR NO SERVIDOR
     public void registerNewUser() throws Exception
     {
         String name = nameField.getText();
