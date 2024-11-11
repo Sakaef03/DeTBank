@@ -73,7 +73,7 @@ public class ClientHandler implements Runnable {
 
         if (user == null) {
             output.writeUTF(bundle.getString("userNotFound"));
-            output.writeDouble(0); // Enviar saldo zero como resposta padrão
+            output.writeDouble(0); 
             return;
         }
 
