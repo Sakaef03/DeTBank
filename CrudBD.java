@@ -82,30 +82,6 @@ public class CrudBD {
         }   
     }
 
-    public void printBillOfSale(User uD){
-        String   sqlSelect = "SELECT AGENCY,NAME,BALANCE FROM ACCOUNT WHERE AGENCY = ?";
-        Connection  conn = ConnFactory.getConn();
-        PreparedStatement stmt = null;
-        ResultSet rs;
-        try
-        {   stmt = conn.prepareStatement(sqlSelect);
-            stmt.setInt(1, uD.getAgency());
-            rs = stmt.executeQuery();
-            if(rs.next())
-            {  
-               uD.setAgency(rs.getInt(1));  
-               uD.setName(rs.getString(2));
-               uD.setBalance(rs.getDouble(3));
-            }
-        }
-        catch(SQLException ex)
-        {   JOptionPane.showMessageDialog(null,"Erro ao buscar os dados da conta" + ex.toString());
-        }
-        finally
-        {   ConnFactory.closeConn(conn, stmt);
-        }   
-    }
-
     public String getUserName(User uD)
     {
         String   sqlSelect = "SELECT NAME FROM ACCOUNT WHERE AGENCY = ?";
@@ -190,5 +166,4 @@ public class CrudBD {
         return user;
     }
     
-
 }
